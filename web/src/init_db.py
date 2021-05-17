@@ -15,37 +15,126 @@ db_host = os.environ['MYSQL_HOST'] # must 'localhost' when running this script o
 db = mysql.connect(user=db_user, password=db_pass, host=db_host, database=db_name)
 cursor = db.cursor()
 
-# # CAUTION!!! CAUTION!!! CAUTION!!! CAUTION!!! CAUTION!!! CAUTION!!! CAUTION!!!
+# CAUTION!!! CAUTION!!! CAUTION!!! CAUTION!!! CAUTION!!! CAUTION!!! CAUTION!!!
 cursor.execute("drop table if exists Users;")
 
-# Create a TStudents table (wrapping it in a try-except is good practice)
-try:
-  cursor.execute("""
+cursor.execute("drop table if exists Personal;")
+
+cursor.execute("drop table if exists Education;")
+
+cursor.execute("drop table if exists Project;")
+
+cursor.execute("drop table if exists Team;")
+
+
+def init_table(table, query, values):
+  try:
+    cursor.execute(table)
+    cursor.executemany(query, values)
+    db.commit()
+  except:
+    print("Table already exists. Not recreating it.")
+
+table = """
     CREATE TABLE Users (
       id          integer  AUTO_INCREMENT PRIMARY KEY,
-      first_name  VARCHAR(30) NOT NULL,
-      last_name   VARCHAR(30) NOT NULL,
+      name        VARCHAR(30) NOT NULL,
       email       VARCHAR(50) NOT NULL,
-      password    VARCHAR(20) NOT NULL,
+      comment     VARCHAR(150) NOT NULL,
       created_at  TIMESTAMP
     );
-  """)
-except:
-  print("Users table already exists. Not recreating it.")
+  """
+query = "insert into Users (name, email, comment, created_at) values (%s, %s, %s, %s)"
 
-# Insert Records
-query = "insert into Users (first_name, last_name, email, password, created_at) values (%s, %s, %s, %s, %s)"
 values = [
-  ('rick','gessner','rick@gessner.com', 'abc123', '2020-02-20 12:00:00'),
-  ('ramsin','khoshabeh','ramsin@khoshabeh.com', 'abc123', '2020-02-20 12:00:00'),
-  ('al','pisano','al@pisano.com', 'abc123', '2020-02-20 12:00:00'),
-  ('truong','nguyen','truong@nguyen.com', 'abc123', '2020-02-20 12:00:00')
+  ('Rick Gessner', 'rick@gessner.com', 'I cant wait to come to the party!', '2021-05-18 12:00:00'),
+  ('Ramsin Khoshabeh','ramsin@khoshabeh.com', 'Me too!', '2021-05-18 12:00:00')
 ]
-cursor.executemany(query, values)
-db.commit()
+
+init_table(table, query, values)
+
+table = """
+    CREATE TABLE Personal (
+      first_name    VARCHAR(30) NOT NULL,
+      last_name     VARCHAR(30) NOT NULL,
+      email         VARCHAR(30) NOT NULL
+    );
+  """
+query = "insert into Personal (first_name, last_name, email) values (%s, %s, %s)"
+
+values = [
+  ('Joe', 'Mama', 'valtov@ucsd.edu')
+]
+
+init_table(table, query, values)
+
+table = """
+    CREATE TABLE Education (
+      school     VARCHAR(50) NOT NULL,
+      degree     VARCHAR(50) NOT NULL,
+      major      VARCHAR(50) NOT NULL,
+      date       VARCHAR(50) NOT NULL,
+    );
+  """
+query = "insert into Education (school, degree, major, date) values (%s, %s, %s, %s)"
+
+values = [
+  ('UCSD', 'B.S', 'Computer Science', '2021')
+]
+
+init_table(table, query, values)
+
+table = """
+    CREATE TABLE Project (
+      title           VARCHAR(150) NOT NULL,
+      description     VARCHAR(150) NOT NULL,
+      link            VARCHAR(150) NOT NULL,
+      Image_src       VARCHAR(150) NOT NULL
+    );
+  """
+query = "insert into Project (title, description, malinkjor, Image_src, team) values (%s, %s, %s, %s)"
+
+values = [
+  ('ServiceUP', 'Offerup but for services', 'link.com', 'img.com')
+]
+
+init_table(table, query, values)
+
+table = """
+    CREATE TABLE Team (
+      api_link        VARCHAR(150) NOT NULL,
+    );
+  """
+query = "insert into Team (api_link) values (%s)"
+
+values = [
+  ('link1.com'),
+  ('link2.com'), 
+  ('link3.com')
+]
+
+init_table(table, query, values)
+
+print('Got here')
 
 # Selecting Records
 cursor.execute("select * from Users;")
-print('---------- DATABASE INITIALIZED ----------')
+print('---------- Users INITIALIZED ----------')
+[print(x) for x in cursor]
+
+cursor.execute("select * from Personal;")
+print('---------- Personal INITIALIZED ----------')
+[print(x) for x in cursor]
+
+cursor.execute("select * from Education;")
+print('---------- Education INITIALIZED ----------')
+[print(x) for x in cursor]
+
+cursor.execute("select * from Project;")
+print('---------- Project INITIALIZED ----------')
+[print(x) for x in cursor]
+
+cursor.execute("select * from Team;")
+print('---------- Team INITIALIZED ----------')
 [print(x) for x in cursor]
 db.close()
