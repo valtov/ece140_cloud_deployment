@@ -57,60 +57,22 @@ table = """
     CREATE TABLE Personal (
       first_name    VARCHAR(30) NOT NULL,
       last_name     VARCHAR(30) NOT NULL,
-      email         VARCHAR(30) NOT NULL
+      email         VARCHAR(30) NOT NULL,
+      school        VARCHAR(50) NOT NULL,
+      degree        VARCHAR(50) NOT NULL,
+      major         VARCHAR(50) NOT NULL,
+      kogda         VARCHAR(50) NOT NULL,
+      title         VARCHAR(150) NOT NULL,
+      description   VARCHAR(150) NOT NULL,
+      link          VARCHAR(150) NOT NULL,
+      img           VARCHAR(150) NOT NULL,
+      api_link      VARCHAR(150) NOT NULL,
     );
   """
-query = "insert into Personal (first_name, last_name, email) values (%s, %s, %s)"
+query = "insert into Personal (first_name, last_name, email, school, degree, major, kogda, title, description, link, img, api_link) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
 
 values = [
-  ('Joe', 'Mama', 'valtov@ucsd.edu')
-]
-
-init_table(table, query, values)
-
-table = """
-    CREATE TABLE Education (
-      school     VARCHAR(50) NOT NULL,
-      degree     VARCHAR(50) NOT NULL,
-      major      VARCHAR(50) NOT NULL,
-      date       VARCHAR(50) NOT NULL,
-    );
-  """
-query = "insert into Education (school, degree, major, date) values (%s, %s, %s, %s)"
-
-values = [
-  ('UCSD', 'B.S', 'Computer Science', '2021')
-]
-
-init_table(table, query, values)
-
-table = """
-    CREATE TABLE Project (
-      title           VARCHAR(150) NOT NULL,
-      description     VARCHAR(150) NOT NULL,
-      link            VARCHAR(150) NOT NULL,
-      Image_src       VARCHAR(150) NOT NULL
-    );
-  """
-query = "insert into Project (title, description, malinkjor, Image_src, team) values (%s, %s, %s, %s)"
-
-values = [
-  ('ServiceUP', 'Offerup but for services', 'link.com', 'img.com')
-]
-
-init_table(table, query, values)
-
-table = """
-    CREATE TABLE Team (
-      api_link        VARCHAR(150) NOT NULL,
-    );
-  """
-query = "insert into Team (api_link) values (%s)"
-
-values = [
-  ('link1.com'),
-  ('link2.com'), 
-  ('link3.com')
+  ('Joe', 'Mama', 'valtov@ucsd.edu', 'UCSD', 'B.S', 'Computer Science', '2021', 'ServiceUP', 'Offerup but for services', 'link.com', 'img.com', 'link.com')
 ]
 
 init_table(table, query, values)
@@ -124,17 +86,5 @@ print('---------- Users INITIALIZED ----------')
 
 cursor.execute("select * from Personal;")
 print('---------- Personal INITIALIZED ----------')
-[print(x) for x in cursor]
-
-cursor.execute("select * from Education;")
-print('---------- Education INITIALIZED ----------')
-[print(x) for x in cursor]
-
-cursor.execute("select * from Project;")
-print('---------- Project INITIALIZED ----------')
-[print(x) for x in cursor]
-
-cursor.execute("select * from Team;")
-print('---------- Team INITIALIZED ----------')
 [print(x) for x in cursor]
 db.close()
