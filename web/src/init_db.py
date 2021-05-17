@@ -63,7 +63,7 @@ table = """
 query = "insert into Personal (first_name, last_name, email) values (%s, %s, %s)"
 
 values = [
-  ('Joe', 'Mama', 'valtov@ucsd.edu')
+  ('Vladimir', 'Altov', 'valtov@ucsd.edu')
 ]
 
 init_table(table, query, values)
@@ -108,9 +108,9 @@ table = """
 query = "insert into Team (api_link) values (%s)"
 
 values = [
-  ('link1.com'),
-  ('link2.com'), 
-  ('link3.com')
+  ('link1.com',),
+  ('link2.com',), 
+  ('link3.com',)
 ]
 
 init_table(table, query, values)

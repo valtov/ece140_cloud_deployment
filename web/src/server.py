@@ -6,6 +6,8 @@ import os
 import time
 import datetime
 
+AVATAR_LINK = "https://i.ibb.co/0nmJ0by/profile.jpg"
+
 db_user = os.environ['MYSQL_USER']
 db_pass = os.environ['MYSQL_PASSWORD']
 db_name = os.environ['MYSQL_DATABASE']
@@ -19,14 +21,17 @@ def convert_json(record, rest):
     d[field] = record[0][i]
   return d
 
-@app.route('/')
-def get_home():
-  # Connect to the database and retrieve the users
+def fetch_query(query):
   db = mysql.connect(host=db_host, database=db_name, user=db_user, passwd=db_pass)
   cursor = db.cursor()
-  cursor.execute("select * from Users;")
+  cursor.execute(query)
   records = cursor.fetchall()
   db.close()
+  return records
+
+@app.route('/')
+def get_home():
+  records = fetch_query("select * from Users;")
   return render_template('home.html', users=records)
 
 
@@ -37,12 +42,7 @@ def cv():
 
 @app.route('/welcome')
 def welcome():
-  # Connect to the database and retrieve the users
-  db = mysql.connect(host=db_host, database=db_name, user=db_user, passwd=db_pass)
-  cursor = db.cursor()
-  cursor.execute("select id, name, email, comment from Users;")
-  records = cursor.fetchall()
-  db.close()
+  records = fetch_query("select id, name, email, comment from Users;")
   print(records)
   return render_template('welcome.html', guestbook=records)
 
@@ -56,13 +56,6 @@ def guestbook():
   ts = time.time()
   timestamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
 
-  # query = (
-  # "INSERT INTO users (name, email, comment, created_at) "
-  # "VALUES (%s, %s, %s, %s)"
-  # )
-  # data = (name, email, comment, timestamp)
-
-  # Connect to the database and retrieve the users
   db = mysql.connect(host=db_host, database=db_name, user=db_user, passwd=db_pass)
   cursor = db.cursor()
   
@@ -78,44 +71,27 @@ def guestbook():
 
 @app.route('/avatar')
 def avatar():
-  return {"image_src": "https://i.ibb.co/0nmJ0by/profile.jpg"}
+  return {"image_src": AVATAR_LINK}
 
 @app.route('/personal')
 def personal():
-  db = mysql.connect(host=db_host, database=db_name, user=db_user, passwd=db_pass)
-  cursor = db.cursor()
-  cursor.execute("select * from Personal;")
-  records = cursor.fetchall()
-  db.close()
+  records = fetch_query("select * from Personal;")
   print(records)
-
   return convert_json(records, ['first_name', 'last_name', 'email'])
-  # return {"first_name":records[0][0], "last_name":records[0][1], "email":records[0][2]}
 
 @app.route('/education')
 def education():
-  db = mysql.connect(host=db_host, database=db_name, user=db_user, passwd=db_pass)
-  cursor = db.cursor()
-  cursor.execute("select * from Education;")
-  records = cursor.fetchall()
-  db.close()
+  records = fetch_query("select * from Education;")
   print(records)
   return convert_json(records, ['school', 'degree', 'major', 'date'])
-  # return {"school":records[0][0], "degree":records[0][1], "major":records[0][2]}
 
 @app.route('/project')
 def project():
-  db = mysql.connect(host=db_host, database=db_name, user=db_user, passwd=db_pass)
-  cursor = db.cursor()
-  cursor.execute("select * from Project;")
-  records = cursor.fetchall()
-  cursor.execute("select * from Team;")
-  team = cursor.fetchall()
-  db.close()
+  records = fetch_query("select * from Project;")
+  team = fetch_query("select * from Team;")
   print(records, team)
   teams = {f'api_link_{i}':url[0] for i, url in enumerate(team)}
-  resp = {'title': records[0][1], 'description':records[0][1], 'link':records[0][2], 'Image_src':records[0][3], 'team':teams}
-  return resp
+  return {**convert_json(records, ['title', 'description', 'link', 'Image_src']), **{'team':teams}}
 
 ''' Route Configurations '''
 if __name__ == '__main__':
