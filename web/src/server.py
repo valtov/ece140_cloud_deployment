@@ -13,6 +13,12 @@ db_host = os.environ['MYSQL_HOST']
 
 app = Flask(__name__)
 
+def convert_json(record, rest):
+  d = {}
+  for i, field in enumerate(rest):
+    d[field] = record[0][i]
+  return d
+
 @app.route('/')
 def get_home():
   # Connect to the database and retrieve the users
@@ -81,7 +87,10 @@ def personal():
   cursor.execute("select * from Personal;")
   records = cursor.fetchall()
   db.close()
-  return records
+  print(records)
+
+  return convert_json(records, ['first_name', 'last_name', 'email'])
+  # return {"first_name":records[0][0], "last_name":records[0][1], "email":records[0][2]}
 
 @app.route('/education')
 def education():
@@ -90,7 +99,9 @@ def education():
   cursor.execute("select * from Education;")
   records = cursor.fetchall()
   db.close()
-  return records
+  print(records)
+  return convert_json(records, ['school', 'degree', 'major', 'date'])
+  # return {"school":records[0][0], "degree":records[0][1], "major":records[0][2]}
 
 @app.route('/project')
 def project():
@@ -101,7 +112,10 @@ def project():
   cursor.execute("select * from Team;")
   team = cursor.fetchall()
   db.close()
-  return {**records, **team}
+  print(records, team)
+  teams = {f'api_link_{i}':url[0] for i, url in enumerate(team)}
+  resp = {'title': records[0][1], 'description':records[0][1], 'link':records[0][2], 'Image_src':records[0][3], 'team':teams}
+  return resp
 
 ''' Route Configurations '''
 if __name__ == '__main__':
