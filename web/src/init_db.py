@@ -66,7 +66,7 @@ table = """
       description   VARCHAR(150) NOT NULL,
       link          VARCHAR(150) NOT NULL,
       img           VARCHAR(150) NOT NULL,
-      api_link      VARCHAR(150) NOT NULL,
+      api_link      VARCHAR(150) NOT NULL
     );
   """
 query = "insert into Personal (first_name, last_name, email, school, degree, major, kogda, title, description, link, img, api_link) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
